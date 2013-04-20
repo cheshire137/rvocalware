@@ -1,6 +1,6 @@
 # RVocalware
 
-Text-to-speech tool using the [Vocalware HTTP REST API](https://www.vocalware.com/support/rest-api). Require you to [sign up for a Vocalware account](https://www.vocalware.com/auth/signup) then [create an API](https://www.vocalware.com/myapis/) so that you have an Account ID, an API ID, and a Secret Phrase.
+Text-to-speech tool using the [Vocalware HTTP REST API](https://www.vocalware.com/support/rest-api). Requires you to [sign up for a Vocalware account](https://www.vocalware.com/auth/signup) then [create an API](https://www.vocalware.com/myapis/) so that you have an Account ID, an API ID, and a Secret Phrase.
 
 # Installation
 

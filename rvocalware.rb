@@ -1,66 +1,32 @@
 require 'trollop'
-require 'open-uri'
-require 'net/http'
-require 'digest/md5'
+require_relative 'lib/rvocalware.rb'
 
 opts = Trollop::options do
   opt :lid, "Language ID", default: 1
   opt :vid, "Voice ID", default: 3
   opt :txt, "Text to be used for audio creation (encoded)", type: :string
   opt :ext, "SWF or MP3; default MP3", default: 'mp3'
-  opt :fx_type, "Sound effect type; default empty", type: :string
-  opt :fx_level, "Sound effect level; default empty", type: :string
+  opt :fx_type, "Sound effect type; default empty", type: :integer
+  opt :fx_level, "Sound effect level; default empty", type: :integer
   opt :acc, "Account ID", type: :string
   opt :api, "API ID", type: :string
   opt :session, "Used to verify the session", type: :string
   opt :secret, "Secret phrase", type: :string
+  opt :output, "Output audio file name, without extension",
+      default: 'rvocalware-txt-to-speech'
 end
 
-ENGINE_ID = 3
-VOCALWARE_PARAMS = [:lid, :vid, :txt, :ext, :fx_type, :fx_level, :acc, :api,
-                    :session, :secret, :eid]
-
-def params_to_query params
-  params.map {|p, v| "#{p.upcase}=#{URI.escape(v.to_s)}"}.join('&')
+VALID_EXTS = ['mp3', 'swf']
+Trollop::die :acc, "is required" unless opts[:acc]
+Trollop::die :api, "is required" unless opts[:acc]
+Trollop::die :secret, "is required" unless opts[:acc]
+Trollop::die :txt, "is required" unless opts[:acc]
+Trollop::die :fx_level, "is required" if opts[:fx_level] && opts[:fx_level] < 1
+Trollop::die :fx_type, "is required" if opts[:fx_type] && opts[:fx_type] < 1
+if opts[:ext] && !VALID_EXTS.include?(opts[:ext].downcase)
+  Trollop::die :ext, "must be either mp3 or swf"
 end
 
-def append_uri uri, params={}
-  uri = URI.parse(uri)
-  return uri if params.empty?
-  if uri.query
-    uri.query = [uri.query, params_to_query(params)].join('&')
-  else
-    uri.query = params_to_query(params)
-  end
-  uri
-end
-
-def generate_uri params
-  append_uri("http://cache.oddcast.com/tts/gen.php", params)
-end
-
-def generate_checksum params
-  info = params.values.map(&:to_s).join
-  puts info
-  Digest::MD5.hexdigest(info)
-end
-
-base_options = {eid: ENGINE_ID}.merge(
-  opts.select {|k, v| VOCALWARE_PARAMS.include?(k) }
-)
-cs_options = base_options.merge(cs: generate_checksum(base_options))
-puts cs_options
-uri = generate_uri(cs_options)
-
-# Net::HTTP.start("cache.oddcast.com") do |http|
-#   resp = http.get(uri.path)
-#   open("sample.mp3", "wb") do |file|
-#     file.write(resp.body)
-#   end
-# end
-
-File.open("sample.mp3", "wb") do |saved_file|
-  open(uri, 'rb') do |read_file|
-    saved_file.write(read_file.read)
-  end
-end
+processor = RVocalware.new(opts)
+processor.download_audio(opts[:output])
+puts 'Saved audio to ' + processor.saved_file_name

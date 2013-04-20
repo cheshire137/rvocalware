@@ -11,12 +11,13 @@ Text-to-speech tool using the [Vocalware HTTP REST API](https://www.vocalware.co
            --vid, -v <i>:   Voice ID (default: 3)
            --txt, -t <s>:   Text to be used for audio creation (encoded)
            --ext, -e <s>:   SWF or MP3; default MP3 (default: mp3)
-       --fx-type, -f <s>:   Sound effect type; default empty
-      --fx-level, -x <s>:   Sound effect level; default empty
+       --fx-type, -f <i>:   Sound effect type; default empty
+      --fx-level, -x <i>:   Sound effect level; default empty
            --acc, -a <s>:   Account ID
            --api, -p <s>:   API ID
        --session, -s <s>:   Used to verify the session
         --secret, -c <s>:   Secret phrase
+        --output, -o <s>:   Output audio file name, without extension (default: rvocalware-txt-to-speech)
               --help, -h:   Show this message
 
 For example:
